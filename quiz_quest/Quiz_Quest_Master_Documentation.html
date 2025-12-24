@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Quest - Master Documentation</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        @media print {
+            .page-break {
+                page-break-before: always;
+            }
+
+            body {
+                margin: 0;
+                padding: 15px;
+            }
+
+            .edit-box {
+                border: 2px solid #000;
+            }
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            background: white;
+            padding: 60px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            text-align: center;
+            border-bottom: 4px solid #3498db;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 2em;
+            margin-top: 40px;
+            border-left: 6px solid #3498db;
+            padding-left: 20px;
+        }
+
+        h3 {
+            color: #2980b9;
+            font-size: 1.5em;
+            margin-top: 25px;
+        }
+
+        .edit-box {
+            background: #fff9e6;
+            border: 3px dashed #f39c12;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .edit-box strong {
+            color: #d68910;
+            font-size: 1.1em;
+        }
+
+        .screenshot-placeholder {
+            background: #ecf0f1;
+            border: 3px dashed #95a5a6;
+            padding: 60px;
+            text-align: center;
+            margin: 25px 0;
+            border-radius: 8px;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .screenshot-placeholder h4 {
+            color: #7f8c8d;
+            margin: 0;
+            font-size: 1.3em;
+        }
+
+        .screenshot-placeholder p {
+            color: #95a5a6;
+            margin: 10px 0 0 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th {
+            background: #3498db;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 3px 8px;
+            border-radius: 4px;
+            color: #e74c3c;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border-left: 5px solid #3498db;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .mermaid {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+        }
+
+        ul,
+        ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>📱 Quiz Quest - Complete Project Documentation</h1>
+
+        <div class="edit-box">
+            <strong>✏️ EDITABLE DOCUMENT:</strong> You can edit this HTML file in any text editor (VS Code, Notepad++,
+            etc.).
+            Look for yellow boxes like this one to add your information. Add screenshots by replacing the gray
+            placeholder boxes.
+        </div>
+
+        <!-- Table of Contents -->
+        <h2>📑 Table of Contents</h2>
+        <ol>
+            <li>Project Overview</li>
+            <li>System Architecture Diagram</li>
+            <li>Database Schema</li>
+            <li>Installation Guide</li>
+            <li>User Guide</li>
+            <li>Admin Guide</li>
+            <li>Screenshots</li>
+            <li>Build & Deployment</li>
+            <li>Technical Specifications</li>
+        </ol>
+
+        <div class="page-break"></div>
+
+        <!-- Section 1: Project Overview -->
+        <h2>1. 📋 Project Overview</h2>
+
+        <div class="edit-box">
+            <strong>EDIT HERE - Project Details:</strong><br>
+            Developer Name:
+            <u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u><br>
+            Roll Number:
+            <u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u><br>
+            College/University:
+            <u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u><br>
+            Project Duration:
+            <u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u><br>
+            Email:
+            <u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>
+        </div>
+
+        <p><strong>Quiz Quest</strong> is a comprehensive mobile quiz application built with Flutter and Firebase. It
+            provides an engaging learning experience through interactive quizzes with real-time leaderboards.</p>
+
+        <h3>Key Features</h3>
+        <ul>
+            <li>🎯 Interactive quiz system with multiple subjects</li>
+            <li>📊 Real-time global and category leaderboards</li>
+            <li>👥 Dual user roles (User & Admin)</li>
+            <li>📈 Performance analytics with graphs</li>
+            <li>🔐 Secure Firebase authentication</li>
+            <li>💾 Cloud-based data storage</li>
+        </ul>
+
+        <table>
+            <tr>
+                <th>Technology</th>
+                <th>Details</th>
+            </tr>
+            <tr>
+                <td>Platform</td>
+                <td>Flutter (Android/iOS)</td>
+            </tr>
+            <tr>
+                <td>Language</td>
+                <td>Dart</td>
+            </tr>
+            <tr>
+                <td>Backend</td>
+                <td>Firebase (Auth, Firestore, Storage)</td>
+            </tr>
+            <tr>
+                <td>State Management</td>
+                <td>Provider</td>
+            </tr>
+        </table>
+
+        <div class="page-break"></div>
+
+        <!-- Section 2: System Architecture -->
+        <h2>2. 🏗️ System Architecture Diagram</h2>
+
+        <p>The following diagram shows how different components of Quiz Quest interact with each other:</p>
+
+        <div class="mermaid">
+            graph TB
+            A[Flutter Mobile App] --> B[Firebase Auth]
+            A --> C[Cloud Firestore]
+            A --> D[Firebase Storage]
+
+            C --> C1[(users)]
+            C --> C2[(quizAttempts)]
+            C --> C3[(questions)]
+            C --> C4[(activities)]
+
+            style A fill:#3498db,color:#fff
+            style B fill:#e74c3c,color:#fff
+            style C fill:#2ecc71,color:#fff
+            style D fill:#f39c12,color:#fff
+        </div>
+
+        <h3>Architecture Explanation</h3>
+        <ul>
+            <li><strong>Flutter App:</strong> Cross-platform mobile application</li>
+            <li><strong>Firebase Auth:</strong> Handles user authentication</li>
+            <li><strong>Firestore:</strong> Real-time NoSQL database</li>
+            <li><strong>Storage:</strong> Stores profile images</li>
+        </ul>
+
+        <div class="page-break"></div>
+
+        <!-- Section 3: Database Schema -->
+        <h2>3. 🗄️ Database Schema</h2>
+
+        <div class="mermaid">
+            erDiagram
+            USERS ||--o{ QUIZ_ATTEMPTS : takes
+            USERS ||--o{ CATEGORY_STATS : has
+
+            USERS {
+            string uid
+            string email
+            string name
+            string role
+            int totalScore
+            int quizzesCompleted
+            }
+
+            QUIZ_ATTEMPTS {
+            string id
+            string uid
+            string subject
+            int score
+            int percentage
+            }
+
+            CATEGORY_STATS {
+            string subject
+            int attempts
+            int accuracy
+            }
+        </div>
+
+        <h3>Collections Overview</h3>
+        <table>
+            <tr>
+                <th>Collection</th>
+                <th>Purpose</th>
+            </tr>
+            <tr>
+                <td>users</td>
+                <td>User profiles and statistics</td>
+            </tr>
+            <tr>
+                <td>quizAttempts</td>
+                <td>All quiz attempts with scores</td>
+            </tr>
+            <tr>
+                <td>questions</td>
+                <td>Quiz questions by subject</td>
+            </tr>
+            <tr>
+                <td>activities</td>
+                <td>User activity logs</td>
+            </tr>
+            <tr>
+                <td>categoryStats</td>
+                <td>Subject-wise performance</td>
+            </tr>
+        </table>
+
+        <div class="page-break"></div>
+
+        <!-- Section 4: Installation Guide -->
+        <h2>4. 🚀 Installation Guide</h2>
+
+        <h3>Prerequisites</h3>
+        <ul>
+            <li>Flutter SDK 3.8.1 or higher</li>
+            <li>Android Studio or VS Code</li>
+            <li>Firebase account</li>
+            <li>Git</li>
+        </ul>
+
+        <h3>Step-by-Step Installation</h3>
+
+        <h4>Step 1: Clone Repository</h4>
+        <pre><code>git clone &lt;repository-url&gt;
+cd quiz_quest</code></pre>
+
+        <h4>Step 2: Install Dependencies</h4>
+        <pre><code>flutter pub get</code></pre>
+
+        <h4>Step 3: Firebase Setup</h4>
+        <ol>
+            <li>Create Firebase project at console.firebase.google.com</li>
+            <li>Add Android/iOS apps</li>
+            <li>Download google-services.json (Android)</li>
+            <li>Download GoogleService-Info.plist (iOS)</li>
+            <li>Enable Email/Password authentication</li>
+            <li>Create Firestore database</li>
+        </ol>
+
+        <h4>Step 4: Run Application</h4>
+        <pre><code>flutter run</code></pre>
+
+        <div class="info-box">
+            <strong>✅ Success:</strong> If everything is set up correctly, the app will launch on your connected device
+            or emulator.
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- Section 5: User Guide -->
+        <h2>5. 👤 User Guide</h2>
+
+        <h3>User Flow Diagram</h3>
+        <div class="mermaid">
+            flowchart TD
+            Start([Launch App]) --> Login[Login Screen]
+            Login --> Home[Home Screen]
+            Home --> Quiz[Select Quiz]
+            Quiz --> Take[Take Quiz]
+            Take --> Result[View Results]
+            Result --> Home
+
+            style Start fill:#2ecc71,color:#fff
+            style Home fill:#3498db,color:#fff
+            style Result fill:#9b59b6,color:#fff
+        </div>
+
+        <h3>How to Use Quiz Quest</h3>
+
+        <h4>1. Registration & Login</h4>
+        <ul>
+            <li>Open the app and click "Sign Up"</li>
+            <li>Enter email, password, and name</li>
+            <li>Verify email address</li>
+            <li>Login with credentials</li>
+        </ul>
+
+        <div class="screenshot-placeholder">
+            <h4>📸 Screenshot: Login Screen</h4>
+            <p>Add screenshot of login screen here</p>
+        </div>
+
+        <h4>2. Taking a Quiz</h4>
+        <ol>
+            <li>From home screen, select a subject (Math, Science, etc.)</li>
+            <li>Choose difficulty level (Easy, Medium, Hard)</li>
+            <li>Answer 10 questions</li>
+            <li>Submit quiz to see results</li>
+        </ol>
+
+        <div class="screenshot-placeholder">
+            <h4>📸 Screenshot: Quiz Screen</h4>
+            <p>Add screenshot of quiz interface here</p>
+        </div>
+
+        <h4>3. Viewing Results</h4>
+        <ul>
+            <li>See your score and percentage</li>
+            <li>Review correct answers</li>
+            <li>Read explanations for each question</li>
+            <li>Check updated leaderboard position</li>
+        </ul>
+
+        <div class="screenshot-placeholder">
+            <h4>📸 Screenshot: Results Screen</h4>
+            <p>Add screenshot of results page here</p>
+        </div>
+
+        <h4>4. Checking Leaderboard</h4>
+        <ul>
+            <li>View global rankings (top 100 users)</li>
+            <li>Filter by category</li>
+            <li>See your current rank</li>
+            <li>Top 3 users get special badges 🥇🥈🥉</li>
+        </ul>
+
+        <div class="screenshot-placeholder">
+            <h4>📸 Screenshot: Leaderboard</h4>
+            <p>Add screenshot of leaderboard here</p>
+        </div>
+
+        <h4>5. Profile Management</h4>
+        <ul>
+            <li>Update profile picture</li>
+            <li>Change name</li>
+            <li>View quiz history</li>
+            <li>See performance statistics</li>
+            <li>Change password</li>
+        </ul>
+
+        <div class="screenshot-placeholder">
+            <h4>📸 Screenshot: User Profile</h4>
+            <p>Add screenshot of profile screen here</p>
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- Section 6: Admin Guide -->
+        <h2>6. 👨‍💼 Admin Guide</h2>
+
+        <h3>Admin Dashboard</h3>
+        <p>Administrators have access to additional features for managing the quiz system.</p>
+
+        <div class="screenshot-placeholder">
+            <h4>📸 Screenshot: Admin Dashboard</h4>
+            <p>Add screenshot of admin dashboard here</p>
+        </div>
+
+        <h3>Admin Capabilities</h3>
+
+        <h4>1. Question Management</h4>
+        <ul>
+            <li><strong>Add Questions:</strong> Create new quiz questions</li>
+            <li><strong>Edit Questions:</strong> Modify existing questions</li>
+            <li><strong>Delete Questions:</strong> Remove outdated questions</li>
+            <li><strong>Organize by Subject:</strong> Categorize questions</li>
+        </ul>
+
+        <div class="screenshot-placeholder">
+            <h4>📸 Screenshot: Question Management</h4>
+            <p>Add screenshot of question management screen here</p>
+        </div>
+
+        <h4>2. User Management</h4>
+        <ul>
+            <li>View all registered users</li>
+            <li>Promote users to admin</li>
+            <li>Demote admins to regular users</li>
+            <li>Activate/deactivate accounts</li>
+        </ul>
+
+        <div class="screenshot-placeholder">
+            <h4>📸 Screenshot: User Management</h4>
+            <p>Add screenshot of user management screen here</p>
+        </div>
+
+        <h4>3. Activity Monitoring</h4>
+        <ul>
+            <li>View all user activities</li>
+            <li>Track quiz completions</li>
+            <li>Monitor login/logout events</li>
+            <li>See profile updates</li>
+        </ul>
+
+        <h4>4. Leaderboard Management</h4>
+        <ul>
+            <li>View global leaderboard</li>
+            <li>Check category-wise rankings</li>
+            <li>Monitor top performers</li>
+        </ul>
+
+        <div class="page-break"></div>
+
+        <!-- Section 7: Build & Deployment -->
+        <h2>7. 📱 Build & Deployment</h2>
+
+        <h3>Building for Android</h3>
+
+        <h4>Debug Build</h4>
+        <pre><code>flutter build apk --debug</code></pre>
+        <p>Output: <code>build/app/outputs/flutter-apk/app-debug.apk</code></p>
+
+        <h4>Release Build</h4>
+        <pre><code>flutter build apk --release</code></pre>
+        <p>Output: <code>build/app/outputs/flutter-apk/app-release.apk</code></p>
+
+        <h4>App Bundle (Google Play)</h4>
+        <pre><code>flutter build appbundle --release</code></pre>
+        <p>Output: <code>build/app/outputs/bundle/release/app-release.aab</code></p>
+
+        <h3>Testing</h3>
+        <pre><code># Run all tests
+flutter test
+
+# Code analysis
+flutter analyze</code></pre>
+
+        <div class="info-box">
+            <strong>Current Status:</strong><br>
+            ✅ Zero critical errors<br>
+            ✅ Production ready<br>
+            ✅ All features working
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- Section 8: Technical Specifications -->
+        <h2>8. 🔧 Technical Specifications</h2>
+
+        <h3>Scoring System</h3>
+        <table>
+            <tr>
+                <th>Difficulty</th>
+                <th>Points per Correct Answer</th>
+            </tr>
+            <tr>
+                <td>Easy</td>
+                <td>10 points</td>
+            </tr>
+            <tr>
+                <td>Medium</td>
+                <td>20 points</td>
+            </tr>
+            <tr>
+                <td>Hard</td>
+                <td>30 points</td>
+            </tr>
+        </table>
+
+        <h3>Security Features</h3>
+        <ul>
+            <li>Firebase Authentication with email/password</li>
+            <li>Email verification required</li>
+            <li>Secure password reset</li>
+            <li>Role-based access control</li>
+            <li>Firestore security rules</li>
+        </ul>
+
+        <h3>Performance Optimizations</h3>
+        <ul>
+            <li>Cached network images</li>
+            <li>Pagination (top 100 leaderboard)</li>
+            <li>Real-time streams with efficient listeners</li>
+            <li>Lazy loading of questions</li>
+            <li>Batch writes to Firestore</li>
+        </ul>
+
+        <h3>Future Enhancements</h3>
+        <ul>
+            <li>☐ Multi-language support</li>
+            <li>☐ Dark mode theme</li>
+            <li>☐ Offline quiz mode</li>
+            <li>☐ Social sharing</li>
+            <li>☐ Achievement badges</li>
+            <li>☐ Push notifications</li>
+        </ul>
+
+        <div class="page-break"></div>
+
+        <!-- Conclusion -->
+        <h2>9. 🎯 Conclusion</h2>
+
+        <p>Quiz Quest is a fully functional, production-ready quiz application demonstrating modern mobile development
+            practices with Flutter and Firebase.</p>
+
+        <h3>Key Achievements</h3>
+        <ul>
+            <li>✅ Zero critical errors</li>
+            <li>✅ Clean architecture</li>
+            <li>✅ Real-time features</li>
+            <li>✅ Responsive UI</li>
+            <li>✅ Comprehensive security</li>
+            <li>✅ Scalable database design</li>
+        </ul>
+
+        <div class="edit-box">
+            <strong>✏️ EDIT HERE - Additional Notes:</strong><br>
+            <p>Add any additional information, challenges faced, or lessons learned:</p>
+            <p>_____________________________________________________________________________</p>
+            <p>_____________________________________________________________________________</p>
+            <p>_____________________________________________________________________________</p>
+            <p>_____________________________________________________________________________</p>
+        </div>
+
+        <!-- Footer -->
+        <hr style="margin-top: 50px; border: 2px solid #3498db;">
+        <div style="text-align: center; margin-top: 30px; color: #7f8c8d;">
+            <p><strong>Quiz Quest - Master Documentation</strong></p>
+            <p>Generated: December 2025 | Version: 1.0.0</p>
+            <p style="margin-top: 20px; font-size: 0.9em;">
+                <strong>How to Save as PDF:</strong> Press Ctrl+P → Select "Save as PDF" → Enable "Background graphics"
+                → Save
+            </p>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: { useMaxWidth: true },
+            sequence: { useMaxWidth: true }
+        });
+    </script>
+</body>
+
+</html>

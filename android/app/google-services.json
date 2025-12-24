@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "485553180730",
+    "project_id": "quiz-quest-f6baa",
+    "storage_bucket": "quiz-quest-f6baa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:485553180730:android:463426a218ff6f70a36503",
+        "android_client_info": {
+          "package_name": "com.example.quiz_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDu2i464uqqJaY6CGePPKXk2vX4hfbPAu8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

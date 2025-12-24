@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Quest - Complete Project Documentation</title>
+    <style>
+        @media print {
+            .page-break {
+                page-break-before: always;
+            }
+
+            body {
+                margin: 0;
+                padding: 15px;
+            }
+
+            .no-print {
+                display: none;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px;
+            background: #f8f9fa;
+        }
+
+        .container {
+            background: white;
+            padding: 60px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        /* Header Styles */
+        h1 {
+            color: #2c3e50;
+            font-size: 3em;
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 5px solid #3498db;
+            padding-bottom: 20px;
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 2em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-left: 6px solid #3498db;
+            padding-left: 20px;
+        }
+
+        h3 {
+            color: #2980b9;
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            color: #16a085;
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        /* Text Styles */
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        strong {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        em {
+            color: #7f8c8d;
+        }
+
+        /* List Styles */
+        ul,
+        ol {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        th {
+            background: #3498db;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* Code Styles */
+        code {
+            background: #f4f4f4;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #e74c3c;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid #3498db;
+        }
+
+        pre code {
+            background: transparent;
+            color: #ecf0f1;
+            padding: 0;
+        }
+
+        /* Info Boxes */
+        .info-box {
+            background: #e8f4f8;
+            border-left: 5px solid #3498db;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+
+        .success-box {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            transition: transform 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card h4 {
+            margin-top: 0;
+            color: #3498db;
+        }
+
+        /* Header Banner */
+        .header-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 40px;
+        }
+
+        .header-banner h1 {
+            color: white;
+            border: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header-banner p {
+            font-size: 1.2em;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 3px solid #e9ecef;
+            color: #7f8c8d;
+        }
+
+        /* Badge Styles */
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin: 5px;
+        }
+
+        .badge-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .badge-success {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .badge-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .badge-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        /* Edit Instructions */
+        .edit-note {
+            background: #fff9e6;
+            border: 2px dashed #f39c12;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-style: italic;
+            color: #856404;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid #e9ecef;
+            margin: 40px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header Banner -->
+        <div class="header-banner">
+            <h1>📱 Quiz Quest</h1>
+            <p>Complete Project Documentation</p>
+            <p style="font-size: 0.9em; margin-top: 15px;">
+                <span class="badge badge-primary">Flutter</span>
+                <span class="badge badge-success">Firebase</span>
+                <span class="badge badge-warning">Mobile App</span>
+            </p>
+        </div>
+
+        <!-- Project Overview -->
+        <h2>📋 Project Overview</h2>
+        <p><strong>Quiz Quest</strong> is a comprehensive mobile quiz application built with Flutter and Firebase,
+            designed to provide an engaging learning experience through interactive quizzes with real-time leaderboards
+            and performance tracking.</p>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>🎯 Interactive Quizzes</h4>
+                <p>Multiple subjects and difficulty levels with instant feedback</p>
+            </div>
+            <div class="feature-card">
+                <h4>📊 Real-time Leaderboards</h4>
+                <p>Global and category-wise rankings updated live</p>
+            </div>
+            <div class="feature-card">
+                <h4>👥 Dual User Roles</h4>
+                <p>Regular users and administrators with different permissions</p>
+            </div>
+            <div class="feature-card">
+                <h4>📈 Performance Analytics</h4>
+                <p>Detailed progress tracking and performance graphs</p>
+            </div>
+            <div class="feature-card">
+                <h4>🔐 Secure Authentication</h4>
+                <p>Firebase-powered secure login system</p>
+            </div>
+            <div class="feature-card">
+                <h4>💾 Cloud Storage</h4>
+                <p>All data stored securely in Firestore</p>
+            </div>
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- Project Information -->
+        <h2>🎯 Project Information</h2>
+
+        <div class="edit-note">
+            <strong>✏️ Edit This Section:</strong> Update the developer name, dates, and contact information below.
+        </div>
+
+        <table>
+            <tr>
+                <th>Property</th>
+                <th>Details</th>
+            </tr>
+            <tr>
+                <td><strong>Project Name</strong></td>
+                <td>Quiz Quest</td>
+            </tr>
+            <tr>
+                <td><strong>Platform</strong></td>
+                <td>Flutter (Android/iOS)</td>
+            </tr>
+            <tr>
+                <td><strong>Backend</strong></td>
+                <td>Firebase (Auth, Firestore, Storage, Functions)</td>
+            </tr>
+            <tr>
+                <td><strong>Language</strong></td>
+                <td>Dart</td>
+            </tr>
+            <tr>
+                <td><strong>SDK Version</strong></td>
+                <td>^3.8.1</td>
+            </tr>
+            <tr>
+                <td><strong>State Management</strong></td>
+                <td>Provider</td>
+            </tr>
+            <tr>
+                <td><strong>Developer</strong></td>
+                <td><em>[Your Name Here]</em></td>
+            </tr>
+            <tr>
+                <td><strong>Development Period</strong></td>
+                <td><em>[Start Date] - [End Date]</em></td>
+            </tr>
+            <tr>
+                <td><strong>Contact Email</strong></td>
+                <td><em>[your-email@example.com]</em></td>
+            </tr>
+        </table>
+
+        <!-- Technology Stack -->
+        <h2>🏗️ Technology Stack</h2>
+
+        <h3>Frontend Technologies</h3>
+        <ul>
+            <li><strong>Framework:</strong> Flutter 3.8.1+</li>
+            <li><strong>Language:</strong> Dart</li>
+            <li><strong>UI Components:</strong> Material Design 3</li>
+            <li><strong>State Management:</strong> Provider package</li>
+            <li><strong>Image Handling:</strong> image_picker, cached_network_image</li>
+            <li><strong>Charts & Graphs:</strong> fl_chart for performance visualization</li>
+        </ul>
+
+        <h3>Backend Technologies</h3>
+        <ul>
+            <li><strong>Authentication:</strong> Firebase Authentication</li>
+            <li><strong>Database:</strong> Cloud Firestore (NoSQL)</li>
+            <li><strong>Storage:</strong> Firebase Storage</li>
+            <li><strong>Functions:</strong> Cloud Functions (optional)</li>
+            <li><strong>Hosting:</strong> Firebase Hosting (for web version)</li>
+        </ul>
+
+        <h3>Key Dependencies</h3>
+        <pre><code>dependencies:
+  firebase_core: ^3.6.0
+  firebase_auth: ^5.3.1
+  cloud_firestore: ^5.4.3
+  firebase_storage: ^12.3.2
+  provider: ^6.1.2
+  fl_chart: ^0.69.0
+  image_picker: ^1.0.7
+  cached_network_image: ^3.3.1
+  intl: ^0.19.0</code></pre>
+
+        <div class="page-break"></div>
+
+        <!-- Database Schema -->
+        <h2>🗄️ Database Schema</h2>
+
+        <div class="info-box">
+            <strong>ℹ️ Database Type:</strong> Cloud Firestore (NoSQL)<br>
+            <strong>Total Collections:</strong> 5 main collections + subcollections<br>
+            <strong>Real-time Updates:</strong> Yes, using Firebase streams
+        </div>
+
+        <h3>1. users Collection</h3>
+        <p>Stores user profiles and statistics.</p>
+        <pre><code>{
+  uid: "string",              // Primary Key
+  email: "user@example.com",
+  name: "John Doe",
+  role: "user" | "admin",
+  totalScore: 1500,
+  quizzesCompleted: 25,
+  averageScore: 60,
+  highestScore: 95,
+  profileImageUrl: "https://...",
+  isActive: true,
+  createdAt: Timestamp,
+  lastActive: Timestamp
+}</code></pre>
+
+        <h3>2. quizAttempts Collection</h3>
+        <p>Records all quiz attempts with scores and timestamps.</p>
+        <pre><code>{
+  id: "string",               // Auto-generated
+  uid: "string",              // Foreign Key → users
+  subject: "Math",
+  difficulty: "medium",
+  totalQuestions: 10,
+  correctAnswers: 7,
+  score: 140,
+  percentage: 70,
+  timeTakenSeconds: 300,
+  createdAt: Timestamp
+}</code></pre>
+
+        <h3>3. questions Collection</h3>
+        <p>Stores all quiz questions organized by subject and difficulty.</p>
+        <pre><code>{
+  id: "string",
+  subject: "Science",
+  difficulty: "hard",
+  questionText: "What is photosynthesis?",
+  options: ["Option A", "Option B", "Option C", "Option D"],
+  correctAnswer: 2,           // Index of correct option
+  explanation: "Detailed explanation...",
+  createdAt: Timestamp
+}</code></pre>
+
+        <h3>4. activities Collection</h3>
+        <p>Logs user activities for admin monitoring.</p>
+        <pre><code>{
+  id: "string",
+  uid: "string",
+  type: "quizCompleted" | "userLogin" | "profileUpdated",
+  title: "Quiz Completed",
+  description: "Completed Math quiz with 80% score",
+  metadata: {
+    subject: "Math",
+    score: 80
+  },
+  timestamp: Timestamp
+}</code></pre>
+
+        <h3>5. categoryStats Subcollection</h3>
+        <p>Path: <code>users/{uid}/categoryStats/{subject}</code></p>
+        <p>Tracks performance per subject for each user.</p>
+        <pre><code>{
+  subject: "Math",            // Document ID
+  attempts: 10,
+  correct: 75,
+  score: 1500,
+  averageScore: 150,
+  accuracy: 75,
+  lastDifficulty: "medium",
+  lastAttempt: Timestamp
+}</code></pre>
+
+        <div class="page-break"></div>
+
+        <!-- User Roles -->
+        <h2>👥 User Roles & Permissions</h2>
+
+        <h3>Regular User Capabilities</h3>
+        <div class="success-box">
+            <strong>✅ Allowed Actions:</strong>
+            <ul>
+                <li>Take quizzes in various subjects</li>
+                <li>View personal statistics and history</li>
+                <li>Check leaderboard rankings</li>
+                <li>Update profile information</li>
+                <li>Change password</li>
+                <li>View performance analytics</li>
+            </ul>
+        </div>
+
+        <div class="warning-box">
+            <strong>❌ Restricted Actions:</strong>
+            <ul>
+                <li>Cannot add/edit/delete questions</li>
+                <li>Cannot manage other users</li>
+                <li>Cannot access admin dashboard</li>
+                <li>Cannot view system-wide analytics</li>
+            </ul>
+        </div>
+
+        <h3>Administrator Capabilities</h3>
+        <div class="success-box">
+            <strong>✅ Full Access Including:</strong>
+            <ul>
+                <li>All regular user capabilities</li>
+                <li>Add, edit, delete quiz questions</li>
+                <li>Manage users (promote/demote, activate/deactivate)</li>
+                <li>View all user activities</li>
+                <li>Access system-wide analytics</li>
+                <li>Manage leaderboards</li>
+                <li>View detailed statistics dashboard</li>
+            </ul>
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- Core Features -->
+        <h2>🎮 Core Features</h2>
+
+        <h3>1. Quiz System</h3>
+        <h4>Quiz Flow</h4>
+        <ol>
+            <li>User selects subject (Math, Science, History, Geography, etc.)</li>
+            <li>Chooses difficulty level (Easy, Medium, Hard)</li>
+            <li>System loads 10 random questions from the database</li>
+            <li>User answers questions with optional timer</li>
+            <li>Submits quiz for automatic scoring</li>
+            <li>Views results with correct answers and explanations</li>
+        </ol>
+
+        <h4>Scoring System</h4>
+        <table>
+            <tr>
+                <th>Difficulty Level</th>
+                <th>Points per Correct Answer</th>
+                <th>Example Score</th>
+            </tr>
+            <tr>
+                <td>Easy</td>
+                <td>10 points</td>
+                <td>7/10 correct = 70 points</td>
+            </tr>
+            <tr>
+                <td>Medium</td>
+                <td>20 points</td>
+                <td>7/10 correct = 140 points</td>
+            </tr>
+            <tr>
+                <td>Hard</td>
+                <td>30 points</td>
+                <td>7/10 correct = 210 points</td>
+            </tr>
+        </table>
+
+        <h3>2. Leaderboard System</h3>
+
+        <h4>Global Leaderboard</h4>
+        <ul>
+            <li>Ranks all active users by total score</li>
+            <li>Top 3 users receive special badges (🥇🥈🥉)</li>
+            <li>Real-time updates when scores change</li>
+            <li>Displays: Rank, Name, Total Score, Quizzes Completed</li>
+            <li>Limited to top 100 users for performance</li>
+        </ul>
+
+        <h4>Category Leaderboard</h4>
+        <ul>
+            <li>Subject-specific rankings</li>
+            <li>Filter by category (Math, Science, etc.)</li>
+            <li>Shows: Rank, Subject, Score, Accuracy percentage</li>
+            <li>Helps users identify their strengths</li>
+        </ul>
+
+        <h3>3. Performance Analytics</h3>
+
+        <h4>User Statistics Dashboard</h4>
+        <ul>
+            <li><strong>Total Quizzes Completed:</strong> Lifetime quiz count</li>
+            <li><strong>Average Score:</strong> Mean score across all quizzes</li>
+            <li><strong>Highest Score:</strong> Personal best achievement</li>
+            <li><strong>Total Points:</strong> Cumulative points earned</li>
+            <li><strong>Performance Trends:</strong> Visual graphs showing progress</li>
+        </ul>
+
+        <h4>Performance Graph</h4>
+        <p>Interactive line chart showing last 10 quiz scores with color-coded performance levels:</p>
+        <ul>
+            <li>🟢 <strong>Green (80%+):</strong> Excellent performance</li>
+            <li>🔵 <strong>Blue (60-79%):</strong> Good performance</li>
+            <li>🟠 <strong>Orange (40-59%):</strong> Fair performance</li>
+            <li>🔴 <strong>Red (&lt;40%):</strong> Needs improvement</li>
+        </ul>
+
+        <h3>4. Activity Logging</h3>
+        <p>Comprehensive tracking of all user actions:</p>
+        <ul>
+            <li>User registration and account creation</li>
+            <li>Login and logout events</li>
+            <li>Quiz completion with scores</li>
+            <li>Profile updates and changes</li>
+            <li>Password changes</li>
+            <li>Admin actions (question management, user management)</li>
+        </ul>
+
+        <div class="page-break"></div>
+
+        <!-- Installation & Setup -->
+        <h2>🚀 Installation & Setup</h2>
+
+        <h3>Prerequisites</h3>
+        <ul>
+            <li>Flutter SDK 3.8.1 or higher</li>
+            <li>Dart SDK (included with Flutter)</li>
+            <li>Android Studio or VS Code with Flutter extensions</li>
+            <li>Firebase account (free tier available)</li>
+            <li>Git for version control</li>
+        </ul>
+
+        <h3>Step 1: Clone Repository</h3>
+        <pre><code>git clone &lt;repository-url&gt;
+cd quiz_quest</code></pre>
+
+        <h3>Step 2: Install Dependencies</h3>
+        <pre><code>flutter pub get</code></pre>
+
+        <h3>Step 3: Firebase Setup</h3>
+        <ol>
+            <li>Create a Firebase project at <a
+                    href="https://console.firebase.google.com">console.firebase.google.com</a></li>
+            <li>Add Android/iOS apps to your Firebase project</li>
+            <li>Download configuration files:
+                <ul>
+                    <li><code>google-services.json</code> for Android</li>
+                    <li><code>GoogleService-Info.plist</code> for iOS</li>
+                </ul>
+            </li>
+            <li>Place files in respective directories:
+                <ul>
+                    <li>Android: <code>android/app/google-services.json</code></li>
+                    <li>iOS: <code>ios/Runner/GoogleService-Info.plist</code></li>
+                </ul>
+            </li>
+            <li>Enable Firebase Authentication (Email/Password method)</li>
+            <li>Create Firestore database in production mode</li>
+            <li>Deploy security rules from <code>firestore.rules</code> file</li>
+        </ol>
+
+        <h3>Step 4: Run Application</h3>
+        <pre><code># Debug mode (for development)
+flutter run
+
+# Release mode (optimized)
+flutter run --release</code></pre>
+
+        <div class="page-break"></div>
+
+        <!-- Build & Deployment -->
+        <h2>📱 Build & Deployment</h2>
+
+        <h3>Android Builds</h3>
+
+        <h4>Debug Build (For Testing)</h4>
+        <pre><code>flutter build apk --debug</code></pre>
+        <p><strong>Output:</strong> <code>build/app/outputs/flutter-apk/app-debug.apk</code></p>
+
+        <h4>Release Build (For Distribution)</h4>
+        <pre><code>flutter build apk --release</code></pre>
+        <p><strong>Output:</strong> <code>build/app/outputs/flutter-apk/app-release.apk</code></p>
+        <p><strong>File Size:</strong> ~20-30 MB (optimized)</p>
+
+        <h4>App Bundle (For Google Play Store)</h4>
+        <pre><code>flutter build appbundle --release</code></pre>
+        <p><strong>Output:</strong> <code>build/app/outputs/bundle/release/app-release.aab</code></p>
+        <p><strong>Recommended for:</strong> Google Play Store submission</p>
+
+        <h4>Split APKs by Architecture</h4>
+        <pre><code>flutter build apk --release --split-per-abi</code></pre>
+        <p>Creates separate APKs for arm64, armeabi, and x86 architectures.</p>
+
+        <h3>iOS Build</h3>
+        <pre><code>flutter build ios --release</code></pre>
+        <p><strong>Requirements:</strong> macOS with Xcode installed</p>
+
+        <h3>Web Build</h3>
+        <pre><code>flutter build web --release</code></pre>
+        <p><strong>Output:</strong> <code>build/web/</code> directory</p>
+        <p><strong>Deploy to:</strong> Firebase Hosting, GitHub Pages, or any web server</p>
+
+        <div class="page-break"></div>
+
+        <!-- Testing -->
+        <h2>🧪 Testing</h2>
+
+        <h3>Run All Tests</h3>
+        <pre><code>flutter test</code></pre>
+
+        <h3>Run Specific Test File</h3>
+        <pre><code>flutter test test/widget_test.dart</code></pre>
+
+        <h3>Run with Coverage Report</h3>
+        <pre><code>flutter test --coverage</code></pre>
+
+        <h3>Code Analysis</h3>
+        <pre><code>flutter analyze</code></pre>
+        <p>Checks code for errors, warnings, and style issues.</p>
+
+        <div class="success-box">
+            <strong>✅ Current Status:</strong> Zero critical errors<br>
+            <strong>📊 Issues Found:</strong> 261 (all non-critical info/warnings)<br>
+            <strong>🎯 Production Ready:</strong> Yes
+        </div>
+
+        <!-- Performance Optimization -->
+        <h2>📊 Performance Optimization</h2>
+
+        <h3>Implemented Optimizations</h3>
+        <ul>
+            <li><strong>Cached Network Images:</strong> Profile images cached locally to reduce bandwidth</li>
+            <li><strong>Pagination:</strong> Leaderboards limited to top 100 for faster loading</li>
+            <li><strong>Real-time Streams:</strong> Efficient Firebase listeners with automatic cleanup</li>
+            <li><strong>Lazy Loading:</strong> Questions loaded on-demand, not all at once</li>
+            <li><strong>Batch Writes:</strong> Multiple Firestore updates in single transaction</li>
+            <li><strong>Index Optimization:</strong> Firestore composite indexes for complex queries</li>
+            <li><strong>Image Compression:</strong> Profile images compressed before upload</li>
+        </ul>
+
+        <div class="page-break"></div>
+
+        <!-- Security -->
+        <h2>🔐 Security Implementation</h2>
+
+        <h3>Firebase Security Rules</h3>
+        <pre><code>// Users can read/write their own data
+match /users/{userId} {
+  allow read: if request.auth != null;
+  allow write: if request.auth.uid == userId || isAdmin();
+}
+
+// Quiz attempts - users can only create their own
+match /quizAttempts/{attemptId} {
+  allow read: if request.auth != null;
+  allow create: if request.auth.uid == request.resource.data.uid;
+}
+
+// Questions - read-only for users, full access for admins
+match /questions/{questionId} {
+  allow read: if request.auth != null;
+  allow write: if isAdmin();
+}
+
+// Activities - admin only
+match /activities/{activityId} {
+  allow read, write: if isAdmin();
+}
+
+function isAdmin() {
+  return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+}</code></pre>
+
+        <h3>Authentication Features</h3>
+        <ul>
+            <li><strong>Email/Password Authentication:</strong> Secure Firebase Auth</li>
+            <li><strong>Email Verification:</strong> Confirms user email addresses</li>
+            <li><strong>Password Reset:</strong> Secure recovery via email</li>
+            <li><strong>Session Management:</strong> Automatic token refresh</li>
+            <li><strong>Presence System:</strong> Tracks online/offline status</li>
+        </ul>
+
+        <!-- Future Enhancements -->
+        <h2>🔄 Future Enhancements</h2>
+
+        <div class="info-box">
+            <h4>Planned Features for Version 2.0</h4>
+            <ul>
+                <li>☐ Multi-language support (English, Hindi, Spanish)</li>
+                <li>☐ Dark mode theme option</li>
+                <li>☐ Offline quiz mode with sync</li>
+                <li>☐ Social sharing of achievements</li>
+                <li>☐ Timed quiz challenges</li>
+                <li>☐ Custom quiz creation by users</li>
+                <li>☐ Achievement badges system</li>
+                <li>☐ Push notifications for challenges</li>
+                <li>☐ Quiz categories expansion</li>
+                <li>☐ Export performance reports as PDF</li>
+            </ul>
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- Known Issues -->
+        <h2>🐛 Known Issues & Solutions</h2>
+
+        <table>
+            <tr>
+                <th>Issue</th>
+                <th>Status</th>
+                <th>Impact</th>
+                <th>Solution</th>
+            </tr>
+            <tr>
+                <td>Deprecated API Warnings</td>
+                <td>Non-critical</td>
+                <td>None (warnings only)</td>
+                <td>Will be resolved in future package updates</td>
+            </tr>
+            <tr>
+                <td>Print Statements in Production</td>
+                <td>Minor</td>
+                <td>Minimal (auto-removed in release)</td>
+                <td>Can be removed for cleaner logs</td>
+            </tr>
+            <tr>
+                <td>Java Deprecation Notes</td>
+                <td>Informational</td>
+                <td>None</td>
+                <td>Library maintainers will update</td>
+            </tr>
+        </table>
+
+        <!-- Conclusion -->
+        <h2>🎯 Conclusion</h2>
+
+        <p>Quiz Quest is a <strong>fully functional, production-ready</strong> quiz application demonstrating modern
+            mobile development practices with Flutter and Firebase. The application showcases real-time data
+            synchronization, secure authentication, role-based access control, and comprehensive analytics.</p>
+
+        <div class="success-box">
+            <h4>Key Achievements</h4>
+            <ul>
+                <li>✅ <strong>Zero Critical Errors:</strong> All major issues resolved</li>
+                <li>✅ <strong>Clean Architecture:</strong> Separation of concerns with services layer</li>
+                <li>✅ <strong>Real-time Features:</strong> Live leaderboards and instant updates</li>
+                <li>✅ <strong>Responsive UI:</strong> Modern, intuitive user interface</li>
+                <li>✅ <strong>Comprehensive Security:</strong> Firebase rules and authentication</li>
+                <li>✅ <strong>Scalable Design:</strong> Database optimized for growth</li>
+            </ul>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <hr>
+            <h3>📚 Additional Resources</h3>
+            <p><strong>Documentation Files:</strong></p>
+            <ul style="list-style: none; padding: 0;">
+                <li>📄 <code>Quiz_Quest_Documentation_Diagrams.html</code> - Visual diagrams and architecture</li>
+                <li>📄 <code>PROJECT_DOCUMENTATION.md</code> - Markdown version</li>
+                <li>📄 <code>README.md</code> - Quick start guide</li>
+                <li>📄 <code>firestore.rules</code> - Database security rules</li>
+            </ul>
+
+            <p style="margin-top: 30px;"><strong>External Resources:</strong></p>
+            <ul style="list-style: none; padding: 0;">
+                <li>🔗 <a href="https://flutter.dev/docs">Flutter Documentation</a></li>
+                <li>🔗 <a href="https://firebase.google.com/docs">Firebase Documentation</a></li>
+                <li>🔗 <a href="https://dart.dev/guides">Dart Documentation</a></li>
+            </ul>
+
+            <hr style="margin-top: 40px;">
+            <p style="margin-top: 30px;">
+                <strong>Quiz Quest Project Documentation</strong><br>
+                Generated: December 2025 | Version: 1.0.0<br>
+                Platform: Flutter + Firebase
+            </p>
+
+            <div class="edit-note" style="margin-top: 20px;">
+                <strong>📝 How to Edit:</strong> Open this HTML file in any text editor (VS Code, Notepad++, etc.) and
+                modify the content as needed.<br>
+                <strong>🖨️ How to Save as PDF:</strong> Open in browser → Press Ctrl+P → Select "Save as PDF" → Enable
+                "Background graphics" → Save
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

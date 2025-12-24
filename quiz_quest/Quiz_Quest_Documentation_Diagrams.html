@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Quest - Project Documentation Diagrams</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        @media print {
+            .page-break { page-break-before: always; }
+            body { margin: 0; padding: 20px; }
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px;
+            background: #f5f5f5;
+        }
+        
+        .diagram-container {
+            background: white;
+            padding: 40px;
+            margin-bottom: 60px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            border-bottom: 4px solid #3498db;
+            padding-bottom: 20px;
+        }
+        
+        h2 {
+            color: #34495e;
+            font-size: 2em;
+            margin-top: 0;
+            border-left: 6px solid #3498db;
+            padding-left: 20px;
+        }
+        
+        .description {
+            background: #ecf0f1;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 25px 0;
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+        
+        .description h3 {
+            color: #2980b9;
+            margin-top: 0;
+            font-size: 1.3em;
+        }
+        
+        .description ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+        
+        .description li {
+            margin: 10px 0;
+        }
+        
+        .mermaid {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .key-points {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        .key-points h4 {
+            color: #856404;
+            margin-top: 0;
+        }
+        
+        .footer {
+            text-align: center;
+            color: #7f8c8d;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 2px solid #bdc3c7;
+            font-size: 0.9em;
+        }
+        
+        strong {
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <h1>📚 Quiz Quest - Complete Project Documentation</h1>
+    <div style="text-align: center; color: #7f8c8d; margin-bottom: 50px;">
+        <p style="font-size: 1.2em;">Comprehensive System Architecture & Database Design</p>
+        <p><strong>Project:</strong> Quiz Quest Mobile Application | <strong>Platform:</strong> Flutter & Firebase</p>
+    </div>
+
+    <!-- Diagram 1: System Architecture -->
+    <div class="diagram-container">
+        <h2>1. System Architecture Diagram</h2>
+        
+        <div class="description">
+            <h3>📋 Overview</h3>
+            <p>This diagram shows the complete system architecture of Quiz Quest, illustrating how different components interact with each other.</p>
+            
+            <h3>🔑 Key Components:</h3>
+            <ul>
+                <li><strong>Flutter Mobile App:</strong> Cross-platform mobile application (Android/iOS)</li>
+                <li><strong>Firebase Authentication:</strong> Handles user login, registration, and session management</li>
+                <li><strong>Cloud Firestore:</strong> NoSQL database storing users, quizzes, scores, and activities</li>
+                <li><strong>Firebase Storage:</strong> Stores user profile images and media files</li>
+                <li><strong>Cloud Functions:</strong> Server-side logic for complex operations</li>
+            </ul>
+            
+            <h3>💡 Data Flow:</h3>
+            <ul>
+                <li>Users authenticate through Firebase Auth</li>
+                <li>App reads/writes data to Firestore in real-time</li>
+                <li>Images are uploaded to Firebase Storage</li>
+                <li>Cloud Functions handle background tasks and validations</li>
+            </ul>
+        </div>
+
+        <div class="mermaid">
+graph TB
+    subgraph "Client Layer"
+        A[Flutter Mobile App]
+        A1[User Interface]
+        A2[State Management<br/>Provider]
+        A3[Services Layer]
+    end
+    
+    subgraph "Firebase Backend"
+        B[Firebase Auth]
+        C[Cloud Firestore]
+        D[Firebase Storage]
+        E[Cloud Functions]
+    end
+    
+    subgraph "Data Collections"
+        C1[(users)]
+        C2[(quizAttempts)]
+        C3[(questions)]
+        C4[(activities)]
+        C5[(categoryStats)]
+    end
+    
+    A1 --> A2
+    A2 --> A3
+    A3 --> B
+    A3 --> C
+    A3 --> D
+    A3 --> E
+    
+    C --> C1
+    C --> C2
+    C --> C3
+    C --> C4
+    C --> C5
+    
+    B -.Authentication.-> A
+    C -.Real-time Data.-> A
+    D -.Media Files.-> A
+    E -.Server Logic.-> A
+    
+    style A fill:#3498db,stroke:#2980b9,stroke-width:3px,color:#fff
+    style B fill:#e74c3c,stroke:#c0392b,stroke-width:2px,color:#fff
+    style C fill:#2ecc71,stroke:#27ae60,stroke-width:2px,color:#fff
+    style D fill:#f39c12,stroke:#d68910,stroke-width:2px,color:#fff
+    style E fill:#9b59b6,stroke:#8e44ad,stroke-width:2px,color:#fff
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- Diagram 2: Database Schema -->
+    <div class="diagram-container">
+        <h2>2. Database Schema (ER Diagram)</h2>
+        
+        <div class="description">
+            <h3>📋 Overview</h3>
+            <p>This Entity-Relationship diagram shows the Firestore database structure and relationships between collections.</p>
+            
+            <h3>🗄️ Collections:</h3>
+            <ul>
+                <li><strong>users:</strong> Stores user profiles, scores, and statistics</li>
+                <li><strong>quizAttempts:</strong> Records of all quiz attempts with scores and timestamps</li>
+                <li><strong>questions:</strong> Quiz questions organized by subject and difficulty</li>
+                <li><strong>activities:</strong> User activity logs for admin monitoring</li>
+                <li><strong>categoryStats:</strong> Subcollection tracking performance per subject</li>
+            </ul>
+            
+            <h3>🔗 Relationships:</h3>
+            <ul>
+                <li>One User → Many Quiz Attempts (1:N)</li>
+                <li>One User → Many Category Stats (1:N)</li>
+                <li>One User → Many Activities (1:N)</li>
+                <li>Questions grouped by Subject (N:1)</li>
+            </ul>
+        </div>
+
+        <div class="mermaid">
+erDiagram
+    USERS ||--o{ QUIZ_ATTEMPTS : takes
+    USERS ||--o{ CATEGORY_STATS : has
+    USERS ||--o{ ACTIVITIES : generates
+    QUESTIONS }o--|| SUBJECTS : belongs_to
+    
+    USERS {
+        string uid PK
+        string email
+        string name
+        string role
+        int totalScore
+        int quizzesCompleted
+        int averageScore
+        int highestScore
+        string profileImageUrl
+        boolean isActive
+        timestamp createdAt
+        timestamp lastActive
+    }
+    
+    QUIZ_ATTEMPTS {
+        string id PK
+        string uid FK
+        string subject
+        string difficulty
+        int totalQuestions
+        int correctAnswers
+        int score
+        int percentage
+        int timeTakenSeconds
+        timestamp createdAt
+    }
+    
+    CATEGORY_STATS {
+        string subject PK
+        string uid FK
+        int attempts
+        int correct
+        int score
+        int averageScore
+        int accuracy
+        string lastDifficulty
+        timestamp lastAttempt
+    }
+    
+    QUESTIONS {
+        string id PK
+        string subject
+        string difficulty
+        string questionText
+        array options
+        int correctAnswer
+        string explanation
+        timestamp createdAt
+    }
+    
+    ACTIVITIES {
+        string id PK
+        string uid FK
+        string type
+        string title
+        string description
+        object metadata
+        timestamp timestamp
+    }
+    
+    SUBJECTS {
+        string name PK
+        int questionCount
+        string description
+    }
+        </div>
+        
+        <div class="key-points">
+            <h4>🔐 Security Rules Applied:</h4>
+            <ul>
+                <li>Users can only read/write their own data</li>
+                <li>Admins have full access to all collections</li>
+                <li>Questions are read-only for regular users</li>
+                <li>Real-time validation on all writes</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- Diagram 3: User Flow -->
+    <div class="diagram-container">
+        <h2>3. User Flow Diagram</h2>
+        
+        <div class="description">
+            <h3>📋 Overview</h3>
+            <p>This flowchart shows the complete user journey through the Quiz Quest application for both regular users and administrators.</p>
+            
+            <h3>👤 Regular User Journey:</h3>
+            <ul>
+                <li><strong>Authentication:</strong> Login or sign up with email/password</li>
+                <li><strong>Home Screen:</strong> View stats, recent activities, and leaderboard preview</li>
+                <li><strong>Quiz Selection:</strong> Choose subject and difficulty level</li>
+                <li><strong>Quiz Taking:</strong> Answer questions with timer</li>
+                <li><strong>Results:</strong> View score, correct answers, and explanations</li>
+                <li><strong>Profile:</strong> Update profile, view history, change password</li>
+            </ul>
+            
+            <h3>👨‍💼 Admin Journey:</h3>
+            <ul>
+                <li><strong>Dashboard:</strong> Overview of system statistics</li>
+                <li><strong>Question Management:</strong> Add, edit, delete quiz questions</li>
+                <li><strong>User Management:</strong> View users, promote/demote, activate/deactivate</li>
+                <li><strong>Activity Monitoring:</strong> Track all user activities</li>
+                <li><strong>Leaderboard:</strong> View global and category-wise rankings</li>
+            </ul>
+        </div>
+
+        <div class="mermaid">
+flowchart TD
+    Start([App Launch]) --> Auth{Authenticated?}
+    Auth -->|No| Login[Login/Signup Screen]
+    Auth -->|Yes| Role{User Role?}
+    
+    Login --> LoginSuccess{Login Success?}
+    LoginSuccess -->|Yes| Role
+    LoginSuccess -->|No| Login
+    
+    Role -->|Regular User| UserHome[User Home Screen]
+    Role -->|Admin| AdminHome[Admin Dashboard]
+    
+    UserHome --> UserActions{User Action}
+    UserActions -->|Take Quiz| SelectCategory[Select Category]
+    UserActions -->|View Profile| Profile[Profile Screen]
+    UserActions -->|View Leaderboard| Leaderboard[Leaderboard]
+    UserActions -->|Logout| Logout[Logout]
+    
+    SelectCategory --> SelectDifficulty[Select Difficulty]
+    SelectDifficulty --> TakeQuiz[Quiz Screen]
+    TakeQuiz --> SubmitQuiz[Submit Answers]
+    SubmitQuiz --> Results[Results Screen]
+    Results --> UpdateStats[Update User Stats]
+    UpdateStats --> UpdateLeaderboard[Update Leaderboard]
+    UpdateLeaderboard --> UserHome
+    
+    Profile --> EditProfile{Edit Profile?}
+    EditProfile -->|Yes| SaveProfile[Save Changes]
+    EditProfile -->|No| UserHome
+    SaveProfile --> UserHome
+    
+    Leaderboard --> UserHome
+    
+    AdminHome --> AdminActions{Admin Action}
+    AdminActions -->|Manage Questions| QuestionMgmt[Question Management]
+    AdminActions -->|Manage Users| UserMgmt[User Management]
+    AdminActions -->|View Activity| ActivityLog[Activity Logs]
+    AdminActions -->|View Leaderboard| AdminLeaderboard[Leaderboard Management]
+    AdminActions -->|Logout| Logout
+    
+    QuestionMgmt --> QuestionAction{Action}
+    QuestionAction -->|Add| AddQuestion[Add New Question]
+    QuestionAction -->|Edit| EditQuestion[Edit Question]
+    QuestionAction -->|Delete| DeleteQuestion[Delete Question]
+    QuestionAction -->|Back| AdminHome
+    
+    AddQuestion --> AdminHome
+    EditQuestion --> AdminHome
+    DeleteQuestion --> AdminHome
+    
+    UserMgmt --> UserAction{Action}
+    UserAction -->|Promote/Demote| ChangeRole[Change User Role]
+    UserAction -->|Activate/Deactivate| ChangeStatus[Change Status]
+    UserAction -->|Back| AdminHome
+    
+    ChangeRole --> AdminHome
+    ChangeStatus --> AdminHome
+    
+    ActivityLog --> AdminHome
+    AdminLeaderboard --> AdminHome
+    
+    Logout --> Start
+    
+    style Start fill:#2ecc71,stroke:#27ae60,stroke-width:3px,color:#fff
+    style UserHome fill:#3498db,stroke:#2980b9,stroke-width:2px,color:#fff
+    style AdminHome fill:#e74c3c,stroke:#c0392b,stroke-width:2px,color:#fff
+    style TakeQuiz fill:#f39c12,stroke:#d68910,stroke-width:2px,color:#fff
+    style Results fill:#9b59b6,stroke:#8e44ad,stroke-width:2px,color:#fff
+    style Logout fill:#95a5a6,stroke:#7f8c8d,stroke-width:2px,color:#fff
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- Diagram 4: Class Diagram -->
+    <div class="diagram-container">
+        <h2>4. Class Diagram</h2>
+        
+        <div class="description">
+            <h3>📋 Overview</h3>
+            <p>This diagram shows the main classes, their properties, methods, and relationships in the Quiz Quest application.</p>
+            
+            <h3>🏗️ Architecture Layers:</h3>
+            <ul>
+                <li><strong>Services Layer:</strong> Business logic and Firebase interactions</li>
+                <li><strong>Models Layer:</strong> Data structures and entities</li>
+                <li><strong>Screens Layer:</strong> UI components and user interfaces</li>
+                <li><strong>Providers Layer:</strong> State management using Provider pattern</li>
+            </ul>
+            
+            <h3>🔧 Key Services:</h3>
+            <ul>
+                <li><strong>AuthService:</strong> Handles authentication, user sessions, and presence</li>
+                <li><strong>ScoreService:</strong> Manages quiz scoring, statistics, and leaderboards</li>
+                <li><strong>QuestionService:</strong> CRUD operations for quiz questions</li>
+                <li><strong>ActivityService:</strong> Logs and retrieves user activities</li>
+            </ul>
+        </div>
+
+        <div class="mermaid">
+classDiagram
+    class AuthService {
+        -FirebaseAuth _auth
+        -FirebaseFirestore _firestore
+        +User currentUser
+        +signIn(email, password)
+        +signUp(email, password, name)
+        +signOut()
+        +resetPassword(email)
+        +updateProfile(name, imageUrl)
+        +setPresenceActive()
+        +setPresenceInactive()
+    }
+    
+    class ScoreService {
+        -FirebaseFirestore _firestore
+        -FirebaseAuth _auth
+        +submitQuizAttempt(subject, difficulty, score)
+        +getUserStats(uid)
+        +getCategoryStats(uid)
+        +getUserRank(uid)
+        +streamGlobalLeaderboard(limit)
+        +streamCategoryLeaderboard(subject, limit)
+    }
+    
+    class QuestionService {
+        -FirebaseFirestore _firestore
+        +getQuestionsByCategory(subject, difficulty)
+        +addQuestion(question)
+        +updateQuestion(id, question)
+        +deleteQuestion(id)
+        +streamCategories()
+    }
+    
+    class ActivityService {
+        -FirebaseFirestore _firestore
+        +logActivity(type, title, description)
+        +getRecentActivities(limit)
+        +getActivityStats()
+        +getMostActiveUsers(limit)
+    }
+    
+    class User {
+        +String uid
+        +String email
+        +String name
+        +String role
+        +int totalScore
+        +int quizzesCompleted
+        +int averageScore
+        +String profileImageUrl
+        +bool isActive
+        +DateTime createdAt
+    }
+    
+    class Question {
+        +String id
+        +String subject
+        +String difficulty
+        +String questionText
+        +List~String~ options
+        +int correctAnswer
+        +String explanation
+        +DateTime createdAt
+    }
+    
+    class QuizAttempt {
+        +String id
+        +String uid
+        +String subject
+        +String difficulty
+        +int totalQuestions
+        +int correctAnswers
+        +int score
+        +int percentage
+        +DateTime createdAt
+    }
+    
+    class Activity {
+        +String id
+        +String uid
+        +String type
+        +String title
+        +String description
+        +Map metadata
+        +DateTime timestamp
+    }
+    
+    class HomeScreen {
+        +build(context)
+        -_buildStatsCards()
+        -_buildRecentActivities()
+        -_buildQuickActions()
+    }
+    
+    class QuizScreen {
+        +String subject
+        +String difficulty
+        +build(context)
+        -_loadQuestions()
+        -_submitAnswer()
+        -_calculateScore()
+    }
+    
+    class AdminDashboard {
+        +build(context)
+        -_buildStatistics()
+        -_buildUserManagement()
+        -_buildQuestionManagement()
+    }
+    
+    AuthService --> User : manages
+    ScoreService --> QuizAttempt : creates
+    ScoreService --> User : updates
+    QuestionService --> Question : manages
+    ActivityService --> Activity : logs
+    
+    HomeScreen ..> AuthService : uses
+    HomeScreen ..> ScoreService : uses
+    QuizScreen ..> QuestionService : uses
+    QuizScreen ..> ScoreService : uses
+    AdminDashboard ..> ActivityService : uses
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- Diagram 5: Quiz Submission Sequence -->
+    <div class="diagram-container">
+        <h2>5. Quiz Submission Sequence Diagram</h2>
+        
+        <div class="description">
+            <h3>📋 Overview</h3>
+            <p>This sequence diagram shows the step-by-step process when a user submits a quiz, including all database updates and real-time synchronization.</p>
+            
+            <h3>⚡ Process Flow:</h3>
+            <ol>
+                <li><strong>User Completes Quiz:</strong> Answers all questions and clicks submit</li>
+                <li><strong>Score Calculation:</strong> System calculates score based on difficulty multiplier</li>
+                <li><strong>Quiz Attempt Record:</strong> Creates new document in quizAttempts collection</li>
+                <li><strong>User Stats Update:</strong> Updates totalScore, quizzesCompleted, averageScore</li>
+                <li><strong>Category Stats Update:</strong> Updates subject-specific performance metrics</li>
+                <li><strong>Leaderboard Update:</strong> Real-time streams notify all connected clients</li>
+                <li><strong>Activity Log:</strong> Records quiz completion activity</li>
+                <li><strong>Results Display:</strong> Shows score, correct answers, and explanations</li>
+            </ol>
+            
+            <h3>🔄 Real-time Updates:</h3>
+            <ul>
+                <li>Leaderboard updates instantly for all users</li>
+                <li>User profile stats refresh in real-time</li>
+                <li>Admin dashboard shows new activity immediately</li>
+            </ul>
+        </div>
+
+        <div class="mermaid">
+sequenceDiagram
+    participant U as User
+    participant QS as QuizScreen
+    participant SS as ScoreService
+    participant FS as Firestore
+    participant AS as ActivityService
+    participant LB as Leaderboard
+    
+    U->>QS: Submit Quiz
+    activate QS
+    QS->>QS: Validate Answers
+    QS->>SS: submitQuizAttempt(subject, difficulty, answers)
+    activate SS
+    
+    SS->>SS: Calculate Score<br/>(difficulty × correct)
+    SS->>SS: Calculate Percentage
+    
+    Note over SS,FS: Step 1: Save Quiz Attempt
+    SS->>FS: Create quizAttempts document
+    FS-->>SS: Attempt ID
+    
+    Note over SS,FS: Step 2: Update User Stats
+    SS->>FS: Get user document
+    FS-->>SS: Current stats
+    SS->>SS: Calculate new totals<br/>(quizzes, score, average)
+    SS->>FS: Update users/{uid}
+    FS-->>SS: Success
+    
+    Note over SS,FS: Step 3: Update Category Stats
+    SS->>FS: Get categoryStats/{subject}
+    FS-->>SS: Current category data
+    SS->>SS: Calculate accuracy<br/>& averages
+    SS->>FS: Update categoryStats/{subject}
+    FS-->>SS: Success
+    
+    Note over SS,AS: Step 4: Log Activity
+    SS->>AS: logActivity(quizCompleted)
+    activate AS
+    AS->>FS: Create activity document
+    FS-->>AS: Success
+    deactivate AS
+    
+    Note over FS,LB: Step 5: Real-time Updates
+    FS->>LB: Stream update (new scores)
+    LB->>LB: Refresh rankings
+    
+    SS-->>QS: Submission complete
+    deactivate SS
+    
+    QS->>QS: Navigate to Results
+    QS->>U: Display Results Screen
+    deactivate QS
+    
+    Note over U,LB: All connected clients<br/>see updated leaderboard
+        </div>
+        
+        <div class="key-points">
+            <h4>⏱️ Performance Optimization:</h4>
+            <ul>
+                <li>Batch writes reduce database calls</li>
+                <li>Real-time streams use efficient listeners</li>
+                <li>Calculations done client-side when possible</li>
+                <li>Average response time: < 2 seconds</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- Diagram 6: Authentication Flow -->
+    <div class="diagram-container">
+        <h2>6. Authentication Flow Diagram</h2>
+        
+        <div class="description">
+            <h3>📋 Overview</h3>
+            <p>This diagram illustrates the complete authentication process including login, signup, and session management.</p>
+            
+            <h3>🔐 Security Features:</h3>
+            <ul>
+                <li><strong>Firebase Authentication:</strong> Industry-standard security</li>
+                <li><strong>Email Verification:</strong> Confirms user email addresses</li>
+                <li><strong>Password Reset:</strong> Secure password recovery via email</li>
+                <li><strong>Session Management:</strong> Automatic token refresh</li>
+                <li><strong>Presence System:</strong> Tracks online/offline status</li>
+            </ul>
+        </div>
+
+        <div class="mermaid">
+sequenceDiagram
+    participant U as User
+    participant LS as LoginScreen
+    participant AS as AuthService
+    participant FA as Firebase Auth
+    participant FS as Firestore
+    participant App as App Home
+    
+    Note over U,App: Login Flow
+    U->>LS: Enter credentials
+    LS->>AS: signIn(email, password)
+    activate AS
+    AS->>FA: signInWithEmailAndPassword()
+    activate FA
+    
+    alt Valid Credentials
+        FA-->>AS: User object + token
+        AS->>FS: Get user document
+        FS-->>AS: User data (role, profile)
+        AS->>AS: setPresenceActive()
+        AS->>FS: Update lastActive timestamp
+        AS-->>LS: Success + User data
+        LS->>App: Navigate to Home
+        App->>U: Show appropriate UI<br/>(User/Admin)
+    else Invalid Credentials
+        FA-->>AS: Authentication error
+        AS-->>LS: Error message
+        LS->>U: Show error dialog
+    end
+    deactivate FA
+    deactivate AS
+    
+    Note over U,App: Signup Flow
+    U->>LS: Click Sign Up
+    LS->>AS: signUp(email, password, name)
+    activate AS
+    AS->>FA: createUserWithEmailAndPassword()
+    activate FA
+    FA-->>AS: New user object
+    AS->>FS: Create user document<br/>(profile, stats, role)
+    FS-->>AS: Success
+    AS->>FA: Send email verification
+    AS-->>LS: Account created
+    deactivate FA
+    LS->>U: Show verification message
+    deactivate AS
+    
+    Note over U,App: Session Management
+    App->>FA: Check auth state
+    FA-->>App: Current user or null
+    alt User logged in
+        App->>FS: Listen to user updates
+        FS-->>App: Real-time profile data
+    else User logged out
+        App->>LS: Redirect to login
+    end
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>Quiz Quest Project Documentation</strong></p>
+        <p>Generated: December 2025 | Platform: Flutter + Firebase</p>
+        <p>© Quiz Quest Team - All diagrams are high-resolution and print-ready</p>
+        <p style="margin-top: 20px; font-size: 0.9em;">
+            <strong>How to Save as PDF:</strong><br>
+            Press Ctrl+P → Select "Save as PDF" → Choose "Print backgrounds" → Save to your desired location (D: drive)
+        </p>
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#3498db',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#2980b9',
+                lineColor: '#34495e',
+                secondaryColor: '#2ecc71',
+                tertiaryColor: '#f39c12',
+                fontSize: '16px'
+            },
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            },
+            sequence: {
+                useMaxWidth: true,
+                wrap: true
+            }
+        });
+    </script>
+</body>
+</html>
