@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'add_edit_question_screen.dart';
 import 'question_bank.dart';
+import 'services/question_service.dart';
 import 'utils/question_update_notifier.dart';
 
 class AdminQuestionManagementScreen extends StatefulWidget {
@@ -28,7 +29,10 @@ class _AdminQuestionManagementScreenState
   @override
   void initState() {
     super.initState();
-    _loadSubjects();
+    // No longer need to manually load subjects here as they are streamed
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -42,13 +46,11 @@ class _AdminQuestionManagementScreenState
     setState(() => _importing = true);
 
     try {
-      // For local QuestionBank, data is already present; just simulate success
-      int created = 0;
-      int skipped = 0;
+      final created = await QuestionService().importInitialData();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Import completed: Created $created, Skipped $skipped'),
+          content: Text('Import completed: Created $created questions in Firestore'),
           backgroundColor: Colors.green,
         ),
       );
@@ -66,48 +68,11 @@ class _AdminQuestionManagementScreenState
     }
   }
 
-  Future<void> _loadSubjects() async {
-    // Load subjects from local QuestionBank
-    final localSubjects = QuestionBank.questions.keys.toList()..sort();
-    setState(() {
-      subjects = ["All", ...localSubjects];
-      isLoading = false;
-    });
-  }
+  // Removed _getLocalQuestions and old _loadSubjects logic in favor of Streams
 
-  List<Map<String, dynamic>> _getLocalQuestions() {
-    final List<Map<String, dynamic>> out = [];
-    QuestionBank.questions.forEach((subject, byDiff) {
-      byDiff.forEach((diff, list) {
-        for (int i = 0; i < list.length; i++) {
-          final q = list[i];
-          out.add({
-            'subject': subject,
-            'difficulty': diff,
-            'question': q['question'],
-            'answers': q['answers'],
-            'correct': q['correct'],
-            'index': i,
-          });
-        }
-      });
-    });
-    return out
-        .where((q) => selectedSubject == 'All' || q['subject'] == selectedSubject)
-        .where((q) => selectedDifficulty == 'all' || q['difficulty'] == selectedDifficulty)
-        .where((q) {
-          if (searchQuery.trim().isEmpty) return true;
-          final text = (q['question'] ?? '').toString().toLowerCase();
-          return text.contains(searchQuery.toLowerCase());
-        })
-        .toList();
-  }
-
-  Future<bool> _deleteLocalQuestion(String subject, String difficulty, int index) async {
+  Future<bool> _deleteFirestoreQuestion(String docId) async {
     try {
-      final list = QuestionBank.questions[subject]?[difficulty];
-      if (list == null || index < 0 || index >= list.length) return false;
-      list.removeAt(index);
+      await QuestionService().deleteQuestion(docId);
       return true;
     } catch (_) {
       return false;
@@ -153,23 +118,32 @@ class _AdminQuestionManagementScreenState
                 LayoutBuilder(
                   builder: (context, constraints) {
                     final isWide = constraints.maxWidth >= 600;
-                    final subjectField = DropdownButtonFormField<String>(
-                      value: subjects.contains(selectedSubject) ? selectedSubject : "All",
-                      decoration: const InputDecoration(
-                        labelText: 'Subject',
-                        border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      ),
-                      items: subjects.map((subject) {
-                        return DropdownMenuItem(
-                          value: subject,
-                          child: Text(subject, overflow: TextOverflow.ellipsis),
+                    final subjectField = StreamBuilder<List<String>>(
+                      stream: QuestionService().streamCategories(),
+                      builder: (context, catSnapshot) {
+                        final currentSubjects = ["All", ...(catSnapshot.data ?? [])];
+                        // Ensure selectedSubject is still valid
+                        final displaySubject = currentSubjects.contains(selectedSubject) ? selectedSubject : "All";
+                        
+                        return DropdownButtonFormField<String>(
+                          value: displaySubject,
+                          decoration: const InputDecoration(
+                            labelText: 'Subject',
+                            border: OutlineInputBorder(),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          ),
+                          items: currentSubjects.map((subject) {
+                            return DropdownMenuItem(
+                              value: subject,
+                              child: Text(subject, overflow: TextOverflow.ellipsis),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              selectedSubject = value ?? "All";
+                            });
+                          },
                         );
-                      }).toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          selectedSubject = value ?? "All";
-                        });
                       },
                     );
 
@@ -242,9 +216,18 @@ class _AdminQuestionManagementScreenState
                 const SizedBox(height: 12),
 
                 // Question Count Badge
-                Builder(
-                  builder: (context) {
-                    final count = _getLocalQuestions().length;
+                StreamBuilder<List<Map<String, dynamic>>>(
+                  stream: QuestionService().streamQuestions(
+                    subject: selectedSubject,
+                    difficulty: selectedDifficulty,
+                  ),
+                  builder: (context, qSnap) {
+                    final count = qSnap.data?.where((q) {
+                      if (searchQuery.trim().isEmpty) return true;
+                      final text = (q['question'] ?? '').toString().toLowerCase();
+                      return text.contains(searchQuery.toLowerCase());
+                    }).length ?? 0;
+
                     return Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
@@ -291,13 +274,28 @@ class _AdminQuestionManagementScreenState
             ),
           ),
 
-          // Questions List from local QuestionBank
+          // Questions List from Firestore
           Expanded(
-            child: Builder(
-              builder: (context) {
-                final questions = _getLocalQuestions();
+            child: StreamBuilder<List<Map<String, dynamic>>>(
+              stream: QuestionService().streamQuestions(
+                subject: selectedSubject,
+                difficulty: selectedDifficulty,
+              ),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-                if (questions.isEmpty) {
+                final questions = snapshot.data ?? [];
+                
+                // Client-side search filtering
+                final filteredQuestions = questions.where((q) {
+                  if (searchQuery.trim().isEmpty) return true;
+                  final text = (q['question'] ?? '').toString().toLowerCase();
+                  return text.contains(searchQuery.toLowerCase());
+                }).toList();
+
+                if (filteredQuestions.isEmpty) {
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -305,9 +303,17 @@ class _AdminQuestionManagementScreenState
                         Icon(Icons.quiz, size: 64, color: Colors.grey[400]),
                         const SizedBox(height: 16),
                         Text(
-                          'No questions found',
+                          questions.isEmpty ? 'No questions in Firestore' : 'No matches found',
                           style: TextStyle(fontSize: 18, color: Colors.grey[600]),
                         ),
+                        if (questions.isEmpty) ...[
+                          const SizedBox(height: 16),
+                          ElevatedButton.icon(
+                            onPressed: _importFromQuestionBank,
+                            icon: const Icon(Icons.download),
+                            label: const Text('Import from QuestionBank'),
+                          ),
+                        ],
                       ],
                     ),
                   );
@@ -315,9 +321,10 @@ class _AdminQuestionManagementScreenState
 
                 return ListView.builder(
                   padding: const EdgeInsets.all(16),
-                  itemCount: questions.length,
+                  itemCount: filteredQuestions.length,
                   itemBuilder: (context, index) {
-                    final Map<String, dynamic> questionData = questions[index];
+                    final questionData = filteredQuestions[index];
+                    final docId = questionData['id'] as String;
 
                     return Card(
                       margin: const EdgeInsets.only(bottom: 12),
@@ -326,6 +333,7 @@ class _AdminQuestionManagementScreenState
                           'Q${index + 1}: ${questionData['question'] ?? 'No question text'}',
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
+                        // ... (rest of the ExpansionTile content remains mostly same except using docId)
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -416,29 +424,16 @@ class _AdminQuestionManagementScreenState
                                     ),
                                     TextButton.icon(
                                       onPressed: () async {
-                                        // Prepare question data for editing
-                                        Map<String, dynamic> questionToEdit = {
-                                          'question': questionData['question'],
-                                          'answers': questionData['answers'],
-                                          'correct': questionData['correct'],
-                                          'subject': questionData['subject'],
-                                          'difficulty': questionData['difficulty'],
-                                        };
-
                                         await Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                             builder: (_) => AddEditQuestionScreen(
                                               subject: questionData['subject'] ?? 'History',
                                               difficulty: questionData['difficulty'] ?? 'easy',
-                                              questionToEdit: questionToEdit,
-                                              questionIndex: questionData['index'] ?? index,
+                                              questionToEdit: questionData,
                                             ),
                                           ),
                                         );
-                                        if (!mounted) return;
-                                        await _loadSubjects();
-                                        setState(() {});
                                       },
                                       icon: const Icon(Icons.edit, color: Colors.blue),
                                       label: const Text('Edit',
@@ -448,9 +443,7 @@ class _AdminQuestionManagementScreenState
                                       onPressed: () {
                                         _showDeleteConfirmation(
                                           context,
-                                          questionData['subject'] as String,
-                                          questionData['difficulty'] as String,
-                                          questionData['index'] as int,
+                                          docId,
                                           (questionData['question'] ?? 'this question') as String,
                                         );
                                       },
@@ -490,7 +483,7 @@ class _AdminQuestionManagementScreenState
     }
   }
 
-  void _showDeleteConfirmation(BuildContext context, String subject, String difficulty, int index, String questionText) {
+  void _showDeleteConfirmation(BuildContext context, String docId, String questionText) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -539,7 +532,7 @@ class _AdminQuestionManagementScreenState
                   const SnackBar(content: Text('Deleting question...')),
                 );
 
-                bool success = await _deleteLocalQuestion(subject, difficulty, index);
+                bool success = await _deleteFirestoreQuestion(docId);
 
                 if (success) {
                   // Notify that questions have been updated

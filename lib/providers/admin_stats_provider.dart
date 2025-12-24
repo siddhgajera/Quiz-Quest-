@@ -45,18 +45,20 @@ class AdminStatsProvider with ChangeNotifier {
 
   Future<void> _loadTotalQuestions() async {
     try {
-      // Count questions from QuestionBank
-      int count = 0;
-      final subjects = QuestionBank.questions.keys;
-      
-      for (final subject in subjects) {
-        final subjectData = QuestionBank.questions[subject]!;
-        for (final difficulty in subjectData.keys) {
-          count += subjectData[difficulty]!.length;
+      final snap = await FirebaseFirestore.instance.collection('questions').get();
+      if (snap.docs.isNotEmpty) {
+        _totalQuestions = snap.docs.length;
+      } else {
+        // Fallback to QuestionBank
+        int count = 0;
+        for (final subject in QuestionBank.questions.keys) {
+          final subjectData = QuestionBank.questions[subject]!;
+          for (final difficulty in subjectData.keys) {
+            count += subjectData[difficulty]!.length;
+          }
         }
+        _totalQuestions = count;
       }
-      
-      _totalQuestions = count;
     } catch (e) {
       print('Error loading total questions: $e');
       _totalQuestions = 0;
@@ -88,8 +90,15 @@ class AdminStatsProvider with ChangeNotifier {
 
   Future<void> _loadQuizCategories() async {
     try {
-      // Count categories from QuestionBank
-      _quizCategories = QuestionBank.questions.keys.length;
+      final snap = await FirebaseFirestore.instance.collection('questions').get();
+      if (snap.docs.isNotEmpty) {
+        final categories = snap.docs
+            .map((doc) => (doc.data() as Map<String, dynamic>)['subject'] as String)
+            .toSet();
+        _quizCategories = categories.length;
+      } else {
+        _quizCategories = QuestionBank.questions.keys.length;
+      }
     } catch (e) {
       print('Error loading quiz categories: $e');
       _quizCategories = 0;

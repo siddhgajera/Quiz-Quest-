@@ -5,7 +5,13 @@ import 'services/config_service.dart';
 
 class ModeSelectionScreen extends StatefulWidget {
   final String subject;
-  const ModeSelectionScreen({super.key, required this.subject});
+  final Map<String, dynamic>? categoryMetadata;
+
+  const ModeSelectionScreen({
+    super.key, 
+    required this.subject,
+    this.categoryMetadata,
+  });
 
   @override
   State<ModeSelectionScreen> createState() => _ModeSelectionScreenState();
@@ -30,18 +36,20 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen> {
   }
 
   int _getExpectedQuestionCount(String difficulty) {
-    final availableCount = QuestionBank.getQuestionCount(widget.subject, difficulty);
-    
-    // Use the same logic as QuestionService
-    if (availableCount <= 5) {
-      return availableCount;
-    } else if (availableCount <= 10) {
-      return availableCount.clamp(0, 8);
-    } else if (availableCount <= 20) {
-      return availableCount.clamp(0, 15);
-    } else {
-      return availableCount.clamp(0, _configuredQuestionCount.clamp(20, availableCount));
+    if (widget.categoryMetadata != null) {
+      final availableCount = (widget.categoryMetadata![difficulty] ?? 0) as int;
+      
+      if (availableCount <= 5) {
+        return availableCount;
+      } else if (availableCount <= 10) {
+        return availableCount.clamp(0, 8);
+      } else if (availableCount <= 20) {
+        return availableCount.clamp(0, 15);
+      } else {
+        return availableCount.clamp(0, _configuredQuestionCount.clamp(20, availableCount));
+      }
     }
+    return 0;
   }
 
   @override

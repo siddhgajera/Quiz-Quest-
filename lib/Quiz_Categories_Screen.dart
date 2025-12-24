@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'mode_selection_screen.dart';
-import 'question_bank.dart';
+import 'services/question_service.dart';
 import 'utils/question_update_notifier.dart';
 
 // Helper to convert string icon names to IconData
@@ -27,88 +27,7 @@ class QuizCategoriesScreen extends StatefulWidget {
 }
 
 class QuizCategoriesScreenState extends State<QuizCategoriesScreen> with WidgetsBindingObserver {
-  List<Map<String, dynamic>> _categories = [];
-  StreamSubscription<void>? _questionUpdateSubscription;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    _loadCategories();
-    
-    // Listen for question updates
-    _questionUpdateSubscription = QuestionUpdateNotifier().onQuestionUpdated.listen((_) {
-      print('QuizCategoriesScreen: Received question update notification, refreshing categories...');
-      _loadCategories();
-    });
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    _questionUpdateSubscription?.cancel();
-    super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      // Refresh when app comes back to foreground
-      _loadCategories();
-    }
-  }
-
-  @override
-  void didUpdateWidget(QuizCategoriesScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    _loadCategories();
-  }
-
-  // Public method to be called when returning from other screens
-  void refreshCategories() {
-    if (mounted) {
-      _loadCategories();
-    }
-  }
-
-  void _loadCategories() {
-    if (!mounted) return;
-    
-    final categories = <Map<String, dynamic>>[];
-    
-    // Get subjects from QuestionBank
-    final subjects = QuestionBank.questions.keys.toList()..sort();
-    
-    for (final subject in subjects) {
-      // Count total questions for this subject
-      int totalQuestions = 0;
-      final subjectData = QuestionBank.questions[subject]!;
-      for (final difficulty in subjectData.keys) {
-        totalQuestions += subjectData[difficulty]!.length;
-      }
-      
-      categories.add({
-        'name': subject,
-        'icon': _getIconNameForSubject(subject),
-        'questionCount': totalQuestions,
-      });
-    }
-    
-    // If no subjects in QuestionBank, use fallback categories
-    if (categories.isEmpty) {
-      for (final cat in _localCategories) {
-        categories.add({
-          'name': cat['name']!,
-          'icon': cat['icon']!,
-          'questionCount': 0,
-        });
-      }
-    }
-    
-    setState(() {
-      _categories = categories;
-    });
-  }
+  // Removed _loadCategories and associated manual state
 
   String _getIconNameForSubject(String subject) {
     final lowerSubject = subject.toLowerCase();
@@ -130,15 +49,17 @@ class QuizCategoriesScreenState extends State<QuizCategoriesScreen> with Widgets
         title: const Text('Quiz Categories'),
         backgroundColor: Colors.teal[700],
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadCategories,
-            tooltip: 'Refresh Categories',
-          ),
-        ],
-      ),
-      body: _categories.isEmpty
-          ? const Center(
+      body: StreamBuilder<List<Map<String, dynamic>>>(
+        stream: QuestionService().streamCategoriesWithMetadata(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final categories = snapshot.data ?? [];
+
+          if (categories.isEmpty) {
+            return const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -150,65 +71,83 @@ class QuizCategoriesScreenState extends State<QuizCategoriesScreen> with Widgets
                   ),
                 ],
               ),
-            )
-          : GridView.builder(
-              padding: const EdgeInsets.all(16.0),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16.0,
-                mainAxisSpacing: 16.0,
-                childAspectRatio: 0.85,
-              ),
-              itemCount: _categories.length,
-              itemBuilder: (context, index) {
-                final cat = _categories[index];
-                final questionCount = cat['questionCount'] as int;
-                
-                return GestureDetector(
-                  onTap: questionCount > 0
-                      ? () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ModeSelectionScreen(subject: cat['name'] as String),
+            );
+          }
+
+          return GridView.builder(
+            padding: const EdgeInsets.all(16.0),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 16.0,
+              mainAxisSpacing: 16.0,
+              childAspectRatio: 0.85,
+            ),
+            itemCount: categories.length,
+            itemBuilder: (context, index) {
+              final cat = categories[index];
+              final String subjectName = cat['name'] as String;
+              final int totalQuestions = cat['total'] as int;
+              
+              return GestureDetector(
+                onTap: totalQuestions > 0
+                    ? () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ModeSelectionScreen(
+                              subject: subjectName,
+                              categoryMetadata: cat,
                             ),
-                          );
-                        }
-                      : null,
-                  child: Card(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    color: questionCount > 0 ? Colors.teal[100] : Colors.grey[300],
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            iconFromName(cat['icon'] as String), 
-                            size: 40, 
-                            color: questionCount > 0 ? Colors.teal[700] : Colors.grey[600],
                           ),
-                          const SizedBox(height: 8),
+                        );
+                      }
+                    : null,
+                child: Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  color: totalQuestions > 0 ? Colors.teal[100] : Colors.grey[300],
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          iconFromName(_getIconNameForSubject(subjectName)), 
+                          size: 40, 
+                          color: totalQuestions > 0 ? Colors.teal[700] : Colors.grey[600],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          subjectName,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: totalQuestions > 0 ? Colors.black : Colors.grey[600],
+                          ),
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        if (totalQuestions > 0) ...[
+                          const SizedBox(height: 4),
                           Text(
-                            cat['name'] as String,
+                            '$totalQuestions Questions',
                             style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: questionCount > 0 ? Colors.black : Colors.grey[600],
+                              fontSize: 12,
+                              color: Colors.teal[800],
                             ),
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
-                      ),
+                      ],
                     ),
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

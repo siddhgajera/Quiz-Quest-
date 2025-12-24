@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'question_bank.dart';
+import 'services/question_service.dart';
 import 'utils/question_update_notifier.dart';
 
 class AddEditQuestionScreen extends StatefulWidget {
@@ -129,34 +130,43 @@ class _AddEditQuestionScreenState extends State<AddEditQuestionScreen> {
           'correct': correctAnswer,
         };
 
-        if (_isEditing && widget.questionIndex != null) {
-          // Update existing question
-          final success = QuestionBank.updateQuestion(
-            subject: _selectedSubject,
-            difficulty: _selectedDifficulty,
-            index: widget.questionIndex!,
-            question: _questionController.text.trim(),
-            answers: answers,
-            correct: correctAnswer,
-          );
+        final service = QuestionService();
+
+        if (_isEditing && widget.questionToEdit != null) {
+          final docId = widget.questionToEdit!['id'] as String?;
           
-          if (!success) {
-            throw Exception('Failed to update question');
+          if (docId != null) {
+            // Update in Firestore
+            await service.updateQuestion(
+              docId: docId,
+              subject: _selectedSubject,
+              difficulty: _selectedDifficulty,
+              question: _questionController.text.trim(),
+              answers: answers,
+              correct: correctAnswer,
+            );
+          } else if (widget.questionIndex != null) {
+            // Fallback to local QuestionBank if no docId (shouldn't happen with Firestore sync)
+            QuestionBank.updateQuestion(
+              subject: _selectedSubject,
+              difficulty: _selectedDifficulty,
+              index: widget.questionIndex!,
+              question: _questionController.text.trim(),
+              answers: answers,
+              correct: correctAnswer,
+            );
           }
-          
-          print('Admin: Updated question in $_selectedSubject/$_selectedDifficulty');
+          print('Admin: Updated question in Firestore/Local: $_selectedSubject/$_selectedDifficulty');
         } else {
-          // Add new question
-          QuestionBank.addQuestion(
+          // Add to Firestore
+          await service.addQuestion(
             subject: _selectedSubject,
             difficulty: _selectedDifficulty,
             question: _questionController.text.trim(),
             answers: answers,
             correct: correctAnswer,
           );
-          
-          final newCount = QuestionBank.getQuestionCount(_selectedSubject, _selectedDifficulty);
-          print('Admin: Added new question to $_selectedSubject/$_selectedDifficulty. Total questions now: $newCount');
+          print('Admin: Added new question to Firestore: $_selectedSubject/$_selectedDifficulty');
         }
 
         // Notify that questions have been updated

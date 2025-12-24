@@ -83,22 +83,44 @@ class QuestionService {
   }
 
   // Get additional questions from other difficulties for variety
-  List<Map<String, dynamic>> _getVarietyQuestions(String subject, String currentDifficulty, int count) {
+  Future<List<Map<String, dynamic>>> _getVarietyQuestions(String subject, String currentDifficulty, int count) async {
     final allDifficulties = ['easy', 'medium', 'hard'];
     final otherDifficulties = allDifficulties.where((d) => d != currentDifficulty.toLowerCase()).toList();
     
     List<Map<String, dynamic>> varietyQuestions = [];
     
     for (String difficulty in otherDifficulties) {
-      final questions = QuestionBank.getQuestions(subject, difficulty);
-      if (questions.isNotEmpty) {
-        final mapped = questions.map((q) => {
-          'question': q['question'],
-          'answers': q['answers'],
-          'correct': q['correct'],
-          'originalDifficulty': difficulty, // Track original difficulty
-        }).toList();
-        varietyQuestions.addAll(mapped);
+      // 1. Try Firestore variety
+      try {
+        final snap = await _firestore.collection(_questionsCollection)
+            .where('subject', isEqualTo: subject)
+            .where('difficulty', isEqualTo: difficulty.toLowerCase())
+            .limit(count)
+            .get();
+        
+        if (snap.docs.isNotEmpty) {
+          varietyQuestions.addAll(snap.docs.map((doc) => {
+            'id': doc.id,
+            ...(doc.data() as Map<String, dynamic>),
+            'originalDifficulty': difficulty,
+          }));
+        }
+      } catch (e) {
+        print('QuestionService: Variety fetch from Firestore failed: $e');
+      }
+
+      // 2. Try Local Variety (if we still need more or as fallback)
+      if (varietyQuestions.length < count) {
+        final localQs = QuestionBank.getQuestions(subject, difficulty);
+        if (localQs.isNotEmpty) {
+          final mapped = localQs.map((q) => {
+            'question': q['question'],
+            'answers': q['answers'],
+            'correct': q['correct'],
+            'originalDifficulty': difficulty,
+          }).toList();
+          varietyQuestions.addAll(mapped);
+        }
       }
     }
     
@@ -123,97 +145,294 @@ class QuestionService {
     }
   }
 
-  // Fetch questions by subject and difficulty. If subject == 'All', do not filter by subject.
-  // Returns up to [limit] randomized questions with automatic shuffling for repeat attempts.
-  // Quiz length is now dynamic based on available questions in the question bank.
-  Future<List<Map<String, dynamic>>> fetchQuestions({
+  // --- Firestore Persistence Methods ---
+
+  // Collection name for questions
+  static const String _questionsCollection = 'questions';
+
+  /// Add a new question to Firestore
+  Future<void> addQuestion({
     required String subject,
     required String difficulty,
-    int? limit, // if null, read from ConfigService
+    required String question,
+    required List<String> answers,
+    required String correct,
   }) async {
-    // Use local QuestionBank instead of Firestore
-    final List<String> subjects = QuestionBank.questions.keys.toList();
-    final String chosenSubject = subject.toLowerCase() == 'all'
-        ? (subjects.isNotEmpty ? subjects.first : 'Science')
-        : subject;
-    final String chosenDifficulty = difficulty.toLowerCase() == 'all'
-        ? 'easy'
-        : difficulty.toLowerCase();
+    try {
+      await _firestore.collection(_questionsCollection).add({
+        'subject': subject,
+        'difficulty': difficulty.toLowerCase(),
+        'question': question,
+        'answers': answers,
+        'correct': correct,
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      print('QuestionService: Added question to Firestore: $subject/$difficulty');
+    } catch (e) {
+      print('QuestionService: Error adding question: $e');
+      throw Exception('Failed to add question to Firestore: $e');
+    }
+  }
 
-    // Get base questions to determine available count
-    final baseQuestions = QuestionBank.getQuestions(chosenSubject, chosenDifficulty);
-    final availableCount = baseQuestions.length;
+  /// Update an existing question in Firestore
+  Future<void> updateQuestion({
+    required String docId,
+    required String subject,
+    required String difficulty,
+    required String question,
+    required List<String> answers,
+    required String correct,
+  }) async {
+    try {
+      await _firestore.collection(_questionsCollection).doc(docId).update({
+        'subject': subject,
+        'difficulty': difficulty.toLowerCase(),
+        'question': question,
+        'answers': answers,
+        'correct': correct,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      print('QuestionService: Updated question in Firestore: $docId');
+    } catch (e) {
+      print('QuestionService: Error updating question: $e');
+      throw Exception('Failed to update question in Firestore: $e');
+    }
+  }
 
-    // Get configured limit from admin settings
-    final configuredLimit = limit ?? await ConfigService().getQuestionsPerQuiz(fallback: 10);
-    
-    // Calculate dynamic question count based on available questions
-    final effectiveLimit = _getDynamicQuestionCount(availableCount, configuredLimit);
-    
-    print('Quiz Dynamic: Available=$availableCount, Configured=$configuredLimit, Using=$effectiveLimit questions for $chosenSubject/$chosenDifficulty');
+  /// Delete a question from Firestore
+  Future<void> deleteQuestion(String docId) async {
+    try {
+      await _firestore.collection(_questionsCollection).doc(docId).delete();
+      print('QuestionService: Deleted question from Firestore: $docId');
+    } catch (e) {
+      print('QuestionService: Error deleting question: $e');
+      throw Exception('Failed to delete question from Firestore: $e');
+    }
+  }
 
-    // Check if user has attempted this quiz before
-    final hasAttempted = await _hasUserAttemptedBefore(chosenSubject, chosenDifficulty);
-    final attemptCount = await _getUserAttemptCount(chosenSubject, chosenDifficulty);
+  /// Stream questions from Firestore with optional filters
+  Stream<List<Map<String, dynamic>>> streamQuestions({String? subject, String? difficulty}) {
+    Query query = _firestore.collection(_questionsCollection);
 
-    print('Quiz Shuffle: User has ${hasAttempted ? "attempted" : "not attempted"} $chosenSubject/$chosenDifficulty before (attempts: $attemptCount)');
+    if (subject != null && subject != 'All') {
+      query = query.where('subject', isEqualTo: subject);
+    }
+    if (difficulty != null && difficulty != 'all') {
+      query = query.where('difficulty', isEqualTo: difficulty.toLowerCase());
+    }
 
-    // Map base questions to the required format
-    final mappedBaseQuestions = baseQuestions
-        .map((q) => {
+    return query.orderBy('createdAt', descending: true).snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return {
+          'id': doc.id,
+          ...data,
+        };
+      }).toList();
+    });
+  }
+
+  /// Import initial data from QuestionBank if collection is empty
+  Future<int> importInitialData() async {
+    try {
+      final existing = await _firestore.collection(_questionsCollection).limit(1).get(
+        const GetOptions(source: Source.server)
+      );
+      
+      if (existing.docs.isNotEmpty) {
+        print('QuestionService: Firestore already has questions. Skipping import.');
+        return 0;
+      }
+
+      print('QuestionService: Starting initial import from QuestionBank...');
+      int count = 0;
+      final batch = _firestore.batch();
+
+      for (var subject in QuestionBank.questions.keys) {
+        for (var difficulty in QuestionBank.questions[subject]!.keys) {
+          final questions = QuestionBank.questions[subject]![difficulty]!;
+          for (var q in questions) {
+            final docRef = _firestore.collection(_questionsCollection).doc();
+            batch.set(docRef, {
+              'subject': subject,
+              'difficulty': difficulty,
               'question': q['question'],
               'answers': q['answers'],
               'correct': q['correct'],
-            })
-        .toList();
-
-    List<Map<String, dynamic>> finalQuestions = [];
-
-    if (!hasAttempted) {
-      // First time: use regular questions with simple shuffle
-      finalQuestions = _shuffleQuestions(mappedBaseQuestions, 0);
-      print('Quiz Shuffle: First attempt - using ${finalQuestions.length} regular questions');
-    } else {
-      // Repeat attempt: mix original questions with variety questions
-      final baseCount = (effectiveLimit * 0.7).round(); // 70% from original difficulty
-      final varietyCount = effectiveLimit - baseCount;   // 30% from other difficulties
-      
-      // Get shuffled base questions
-      final shuffledBase = _shuffleQuestions(mappedBaseQuestions, attemptCount);
-      finalQuestions.addAll(shuffledBase.take(baseCount));
-      
-      // Add variety questions from other difficulties
-      if (varietyCount > 0) {
-        final varietyQuestions = _getVarietyQuestions(chosenSubject, chosenDifficulty, varietyCount);
-        finalQuestions.addAll(varietyQuestions);
-        print('Quiz Shuffle: Added $varietyCount variety questions from other difficulties');
+              'createdAt': FieldValue.serverTimestamp(),
+              'updatedAt': FieldValue.serverTimestamp(),
+            });
+            count++;
+            
+            // Batches are limited to 500 operations
+            if (count % 400 == 0) {
+              await batch.commit();
+              // Start a new batch if we have more
+            }
+          }
+        }
       }
-      
-      // Final shuffle of the mixed questions
-      finalQuestions.shuffle(_random);
-      print('Quiz Shuffle: Repeat attempt - mixed ${baseCount} base + ${varietyCount} variety questions');
-    }
 
-    // Ensure we don't exceed the requested limit
-    final result = finalQuestions.take(effectiveLimit).toList();
-    print('Quiz Shuffle: Returning ${result.length} questions for $chosenSubject/$chosenDifficulty');
-    
-    return result;
+      await batch.commit();
+      print('QuestionService: Imported $count questions successfully.');
+      return count;
+    } catch (e) {
+      print('QuestionService: Error during import: $e');
+      throw Exception('Failed to import initial data: $e');
+    }
   }
 
-  // Stream categories in real-time
+  // Fetch questions by subject and difficulty. (Optimized for Persistence & Variety)
+  Future<List<Map<String, dynamic>>> fetchQuestions({
+    required String subject,
+    required String difficulty,
+    int? limit,
+  }) async {
+    List<Map<String, dynamic>> rawQuestions = [];
+    bool isFromFirestore = false;
+
+    try {
+      // 1. Fetch from Firestore
+      final snap = await _firestore.collection(_questionsCollection)
+          .where('subject', isEqualTo: subject)
+          .where('difficulty', isEqualTo: difficulty.toLowerCase())
+          .get();
+      
+      if (snap.docs.isNotEmpty) {
+        rawQuestions = snap.docs.map((doc) => {
+          'id': doc.id,
+          ...(doc.data() as Map<String, dynamic>),
+        }).toList();
+        isFromFirestore = true;
+        print('QuestionService: Fetched ${rawQuestions.length} raw questions from Firestore');
+      }
+    } catch (e) {
+      print('QuestionService: Firestore fetch error: $e');
+    }
+
+    // 2. Fallback to local if Firestore is empty
+    if (rawQuestions.isEmpty) {
+      final subjects = QuestionBank.questions.keys.toList();
+      String? matchedSubject;
+      for (var s in subjects) {
+        if (s.toLowerCase() == subject.toLowerCase()) {
+          matchedSubject = s;
+          break;
+        }
+      }
+
+      final String chosenSubject = matchedSubject ?? (subjects.isNotEmpty ? subjects.first : 'Science');
+      final String chosenDifficulty = difficulty.toLowerCase() == 'all' ? 'easy' : difficulty.toLowerCase();
+
+      final localQs = QuestionBank.getQuestions(chosenSubject, chosenDifficulty);
+      rawQuestions = localQs.map((q) => {
+        'question': q['question'],
+        'answers': q['answers'],
+        'correct': q['correct'],
+      }).toList();
+      print('QuestionService: Using ${rawQuestions.length} local questions as fallback');
+    }
+
+    if (rawQuestions.isEmpty) return [];
+
+    // 3. Apply Advanced Shuffling Strategy
+    final attemptCount = await _getUserAttemptCount(subject, difficulty);
+    final processedQuestions = _shuffleQuestions(rawQuestions, attemptCount);
+
+    // 4. Calculate Dynamic Limit
+    final configuredLimit = limit ?? await ConfigService().getQuestionsPerQuiz(fallback: 10);
+    final dynamicLimit = _getDynamicQuestionCount(processedQuestions.length, configuredLimit);
+
+    // 5. Variety Injection (Mix in other difficulties on repeat attempts)
+    List<Map<String, dynamic>> finalQuestions = processedQuestions.take(dynamicLimit).toList();
+    
+    if (attemptCount > 0 && finalQuestions.length < dynamicLimit + 2) {
+      final varietyNeed = (dynamicLimit * 0.2).round().clamp(1, 3);
+      final varietyExtras = await _getVarietyQuestions(subject, difficulty, varietyNeed);
+      
+      if (varietyExtras.isNotEmpty) {
+        print('QuestionService: Injected ${varietyExtras.length} variety questions');
+        finalQuestions.addAll(varietyExtras);
+        finalQuestions.shuffle(_random);
+      }
+    }
+
+    return finalQuestions.take(dynamicLimit).toList();
+  }
+
+  // Stream categories (Updated to use Firestore if available)
   Stream<List<String>> streamCategories() {
-    final controller = StreamController<List<String>>();
-    // Emit once with local categories from QuestionBank
-    controller.add(QuestionBank.questions.keys.toList());
-    // Close immediately as this is static data
-    controller.close();
-    return controller.stream;
+    return _firestore.collection(_questionsCollection).snapshots().map((snapshot) {
+      final subjects = snapshot.docs
+          .map((doc) => (doc.data() as Map<String, dynamic>)['subject'] as String)
+          .toSet()
+          .toList();
+      
+      if (subjects.isEmpty) {
+        return QuestionBank.getSubjects();
+      }
+      subjects.sort();
+      return subjects;
+    });
+  }
+
+  /// Stream categories with metadata (total questions, counts per difficulty)
+  Stream<List<Map<String, dynamic>>> streamCategoriesWithMetadata() {
+    return _firestore.collection(_questionsCollection).snapshots().map((snapshot) {
+      final Map<String, Map<String, dynamic>> categories = {};
+
+      for (var doc in snapshot.docs) {
+        final data = doc.data() as Map<String, dynamic>;
+        final subject = data['subject'] as String;
+        final difficulty = data['difficulty'] as String;
+
+        if (!categories.containsKey(subject)) {
+          categories[subject] = {
+            'name': subject,
+            'total': 0,
+            'easy': 0,
+            'medium': 0,
+            'hard': 0,
+          };
+        }
+
+        categories[subject]!['total'] = (categories[subject]!['total'] as int) + 1;
+        if (categories[subject]!.containsKey(difficulty)) {
+          categories[subject]![difficulty] = (categories[subject]![difficulty] as int) + 1;
+        }
+      }
+
+      // If Firestore is empty, fallback to local QuestionBank
+      if (categories.isEmpty) {
+        final List<Map<String, dynamic>> fallback = [];
+        for (var subject in QuestionBank.questions.keys) {
+          int subjectTotal = 0;
+          final diffCounts = <String, int>{};
+          for (var diff in QuestionBank.questions[subject]!.keys) {
+            final count = QuestionBank.questions[subject]![diff]!.length;
+            diffCounts[diff] = count;
+            subjectTotal += count;
+          }
+          fallback.add({
+            'name': subject,
+            'total': subjectTotal,
+            ...diffCounts,
+          });
+        }
+        fallback.sort((a, b) => (a['name'] as String).compareTo(b['name'] as String));
+        return fallback;
+      }
+
+      final result = categories.values.toList();
+      result.sort((a, b) => (a['name'] as String).compareTo(b['name'] as String));
+      return result;
+    });
   }
 
   // Ensure a category exists (idempotent)
   Future<void> upsertCategory(String name, {bool active = true, int order = 0}) async {
-    // No-op for local QuestionBank implementation
+    // No-op for now as we infer categories from questions
     return;
   }
 }
